@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة إدارة Premium AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --secondary-color: #6a75ff;
+            --accent-color: #8a63ff;
+            --bg-color: #f8f9fa;
+            --text-color: #333;
+            --card-bg: #fff;
+            --border-color: #e0e0e0;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        .dark-mode {
+            --bg-color: #121212;
+            --text-color: #f0f0f0;
+            --card-bg: #1e1e1e;
+            --border-color: #333;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: var(--transition);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: var(--shadow);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo span {
+            color: #ffd700;
+            font-weight: 300;
+        }
+
+        .logo i {
+            font-size: 1.8rem;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .theme-toggle, .menu-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .theme-toggle:hover, .menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 3rem;
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        .admin-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--card-bg);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        .upload-area i {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-area p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.4);
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 1.5rem;
+            border-radius: 12px;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-status {
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 600;
+            display: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: var(--border-color);
+            border-radius: 4px;
+            margin-top: 1.5rem;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 1rem;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.3);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 108, 247, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .submit-btn.loading {
+            padding-right: 4rem;
+        }
+
+        .submit-btn.loading::after {
+            content: '';
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid transparent;
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .admin-login {
+            max-width: 450px;
+            margin: 3rem auto;
+            padding: 3rem;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .admin-login h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(74, 108, 247, 0.3);
+            z-index: 3000;
+            opacity: 0;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .toast.active {
+            opacity: 1;
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        .admin-info {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .admin-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .admin-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .logout-btn {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .logout-btn:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 1rem;
+            }
+            
+            .logo {
+                font-size: 1.6rem;
+            }
+            
+            .theme-toggle, .menu-toggle {
+                width: 40px;
+                height: 40px;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .admin-login {
+                margin: 2rem auto;
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 0.8rem 1rem;
+            }
+            
+            .logo {
+                font-size: 1.4rem;
+            }
+            
+            .header-controls {
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .admin-login {
+                padding: 1.5rem;
+                margin: 1rem auto;
+            }
+            
+            .admin-info {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-robot"></i>
+                Premium <span>AI</span>
+            </div>
+            <div class="header-controls">
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" id="loginPage">
+        <div class="admin-login">
+            <h2><i class="fas fa-lock"></i> تسجيل الدخول للإدارة</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="adminUsername"><i class="fas fa-user"></i> اسم المستخدم:</label>
+                    <input type="text" id="adminUsername" required placeholder="أدخل اسم المستخدم">
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword"><i class="fas fa-key"></i> كلمة المرور:</label>
+                    <input type="password" id="adminPassword" required placeholder="أدخل كلمة المرور">
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-sign-in-alt"></i> دخول
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container" id="adminPage" style="display: none;">
+        <div class="admin-info">
+            <div class="admin-details">
+                <div class="admin-avatar" id="adminAvatar"></div>
+                <div>
+                    <div class="admin-name" id="adminName"></div>
+                    <div>مرحباً بك في لوحة الإدارة</div>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+        
+        <h1 class="page-title">لوحة الإدارة</h1>
+        <div class="admin-content">
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>اسحب وأفلت الصورة هنا أو انقر للاختيار</p>
+                <button type="button" class="upload-btn">اختر صورة</button>
+                <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                <img class="preview-image" id="previewImage" src="" alt="معاينة الصورة">
+                <div class="upload-status" id="uploadStatus"></div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+            
+            <form id="uploadForm">
+                <div class="form-group">
+                    <label for="imageTitle"><i class="fas fa-heading"></i> عنوان الصورة:</label>
+                    <input type="text" id="imageTitle" required placeholder="أدخل عنوان جذاب للصورة">
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageText"><i class="fas fa-align-left"></i> النص المرافق:</label>
+                    <textarea id="imageText" required placeholder="أدخل النص المرافق للصورة"></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i> نشر الصورة
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // تهيئة Supabase
+        const supabaseUrl = 'https://llvlczpbvmtrnskzlaqr.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxsdmxjenBidm10cm5za3psYXFyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5MTA3OTQsImV4cCI6MjA3NDQ4Njc5NH0.ElQ9v2BcAuqFas9_k4cCsm39IPL6vpRasXDuetXvGww';
+        
+        console.log('جاري تهيئة Supabase...');
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        console.log('تم تهيئة Supabase:', supabase);
+
+        // DOM elements
+        let themeToggle, loginPage, adminPage, loginForm, uploadForm, uploadArea;
+        let imageUpload, previewImage, uploadStatus, progressBar, progress;
+        let imageTitle, imageText, submitBtn, toast, toastMessage;
+        let adminAvatar, adminName, logoutBtn;
+
+        // المتغيرات العامة
+        let selectedImageFile = null;
+        let isUploading = false;
+        let currentAdmin = null;
+
+        // دالة لفحص اتصال Supabase
+        async function checkSupabaseConnection() {
+            try {
+                console.log('جاري فحص اتصال Supabase...');
+                const { data, error } = await supabase.from('images').select('count').limit(1);
+                if (error) throw error;
+                console.log('✅ اتصال Supabase شغال');
+                return true;
+            } catch (error) {
+                console.error('❌ خطأ في اتصال Supabase:', error);
+                return false;
+            }
+        }
+
+        // تهيئة المسؤولين في قاعدة البيانات
+        async function initializeAdmins() {
+            try {
+                console.log('جاري التحقق من وجود المسؤولين...');
+                
+                // التحقق من وجود المسؤولين
+                const { data: existingAdmins, error: checkError } = await supabase
+                    .from('admins')
+                    .select('*');
+                
+                if (checkError) {
+                    console.error('خطأ في التحقق من المسؤولين:', checkError);
+                    // نفترض أن الجدول غير موجود، سنحاول إنشاء المسؤولين
+                }
+                
+                // إذا لم يكن هناك مسؤولين، نقوم بإنشاء المسؤولين الافتراضيين
+                if (!existingAdmins || existingAdmins.length === 0) {
+                    console.log('إنشاء المسؤولين الافتراضيين...');
+                    
+                    const admins = [
+                        {
+                            username: 'karim pro',
+                            password: 'karim@123',
+                            display_name: 'Karim Pro'
+                        },
+                        {
+                            username: 'Abdullah Neda',
+                            password: 'Drox23',
+                            display_name: 'Abdullah Neda'
+                        }
+                    ];
+                    
+                    const { data: newAdmins, error: insertError } = await supabase
+                        .from('admins')
+                        .insert(admins);
+                    
+                    if (insertError) {
+                        console.error('خطأ في إنشاء المسؤولين:', insertError);
+                        // إذا فشل الإدراج، قد يكون الجدول غير موجود
+                        // سنحاول إنشاء الجدول يدويًا
+                        await createAdminsTable();
+                    } else {
+                        console.log('تم إنشاء المسؤولين بنجاح:', newAdmins);
+                    }
+                } else {
+                    console.log('المسؤولون موجودون بالفعل:', existingAdmins);
+                }
+            } catch (error) {
+                console.error('خطأ في تهيئة المسؤولين:', error);
+            }
+        }
+
+        // دالة لإنشاء جدول المسؤولين (إذا لم يكن موجودًا)
+        async function createAdminsTable() {
+            // في Supabase، نقوم بإنشاء الجدول يدويًا من خلال SQL Editor في Dashboard
+            // هذه الدالة توضح فقط أننا نحتاج إلى إنشاء الجدول
+            console.log('يرجى إنشاء جدول admins في Supabase يدويًا');
+            console.log('يمكنك استخدام هذا الاستعلام:');
+            console.log(`
+                CREATE TABLE IF NOT EXISTS admins (
+                    id SERIAL PRIMARY KEY,
+                    username VARCHAR(255) UNIQUE NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    display_name VARCHAR(255) NOT NULL,
+                    created_at TIMESTAMP DEFAULT NOW()
+                );
+            `);
+        }
+
+        // التحقق من تسجيل الدخول
+        async function checkLogin(event) {
+            event.preventDefault();
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            try {
+                console.log('جاري التحقق من بيانات الدخول...');
+                
+                const { data: admin, error } = await supabase
+                    .from('admins')
+                    .select('*')
+                    .eq('username', username)
+                    .eq('password', password)
+                    .single();
+                
+                if (error) {
+                    console.error('خطأ في تسجيل الدخول:', error);
+                    showToast('اسم المستخدم أو كلمة المرور غير صحيحة');
+                    return;
+                }
+                
+                if (admin) {
+                    console.log('تم تسجيل الدخول بنجاح:', admin);
+                    currentAdmin = admin;
+                    
+                    // حفظ حالة تسجيل الدخول في localStorage
+                    localStorage.setItem('adminSession', JSON.stringify({
+                        id: admin.id,
+                        username: admin.username,
+                        display_name: admin.display_name,
+                        loginTime: new Date().getTime()
+                    }));
+                    
+                    // تحديث واجهة المستخدم
+                    updateAdminUI();
+                    loginPage.style.display = 'none';
+                    adminPage.style.display = 'block';
+                    showToast(`مرحباً ${admin.display_name}`);
+                } else {
+                    showToast('اسم المستخدم أو كلمة المرور غير صحيحة');
+                }
+            } catch (error) {
+                console.error('حدث خطأ أثناء تسجيل الدخول:', error);
+                showToast('حدث خطأ أثناء تسجيل الدخول');
+            }
+        }
+
+        // تحديث واجهة المسؤول
+        function updateAdminUI() {
+            if (currentAdmin) {
+                adminName.textContent = currentAdmin.display_name;
+                adminAvatar.textContent = currentAdmin.display_name.charAt(0).toUpperCase();
+            }
+        }
+
+        // تسجيل الخروج
+        function logout() {
+            currentAdmin = null;
+            localStorage.removeItem('adminSession');
+            loginPage.style.display = 'block';
+            adminPage.style.display = 'none';
+            loginForm.reset();
+            showToast('تم تسجيل الخروج بنجاح');
+        }
+
+        // التحقق من وجود جلسة سابقة
+        function checkExistingSession() {
+            const savedSession = localStorage.getItem('adminSession');
+            if (savedSession) {
+                try {
+                    const session = JSON.parse(savedSession);
+                    // التحقق من أن الجلسة لا تزال صالحة (أقل من 24 ساعة)
+                    const now = new Date().getTime();
+                    if (now - session.loginTime < 24 * 60 * 60 * 1000) {
+                        // جلسة صالحة، نستخدم بيانات المسؤول المخزنة
+                        currentAdmin = session;
+                        updateAdminUI();
+                        loginPage.style.display = 'none';
+                        adminPage.style.display = 'block';
+                        console.log('تم استعادة الجلسة السابقة:', currentAdmin);
+                    } else {
+                        // الجلسة منتهية الصلاحية
+                        localStorage.removeItem('adminSession');
+                    }
+                } catch (error) {
+                    console.error('خطأ في تحليل الجلسة المحفوظة:', error);
+                    localStorage.removeItem('adminSession');
+                }
+            }
+        }
+
+        // عرض رسالة التوست
+        function showToast(message) {
+            toastMessage.textContent = message;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        // تحديث حالة الرفع
+        function updateUploadStatus(message, color) {
+            uploadStatus.textContent = message;
+            uploadStatus.style.color = color;
+            uploadStatus.style.display = 'block';
+            uploadStatus.style.background = color === 'green' ? 'rgba(46, 204, 113, 0.1)' : 
+                                           color === 'red' ? 'rgba(231, 76, 60, 0.1)' : 
+                                           'rgba(52, 152, 219, 0.1)';
+            uploadStatus.style.border = `1px solid ${color}`;
+        }
+
+        // تحديث شريط التقدم
+        function updateProgress(percent) {
+            progress.style.width = percent + '%';
+        }
+
+        // تحميل الصورة للمعاينة
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                if (!file.type.startsWith('image/')) {
+                    showToast('يرجى اختيار ملف صورة فقط');
+                    return;
+                }
+                
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('حجم الصورة كبير جداً (الحد الأقصى 5MB)');
+                    return;
+                }
+                
+                selectedImageFile = file;
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    updateUploadStatus('✓ تم تحميل الصورة بنجاح', 'green');
+                    progressBar.style.display = 'none';
+                };
+                
+                reader.onerror = function() {
+                    updateUploadStatus('✗ فشل في تحميل الصورة', 'red');
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // رفع الصورة والنص إلى Supabase
+        async function uploadImage(event) {
+            event.preventDefault();
+            
+            if (isUploading) {
+                showToast('جاري رفع صورة أخرى، يرجى الانتظار...');
+                return;
+            }
+            
+            if (!selectedImageFile) {
+                showToast('يرجى اختيار صورة أولاً');
+                return;
+            }
+            
+            if (!imageTitle.value.trim() || !imageText.value.trim()) {
+                showToast('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            // بدء عملية الرفع
+            isUploading = true;
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري النشر...';
+            
+            // إظهار شريط التقدم
+            progressBar.style.display = 'block';
+            updateProgress(0);
+            updateUploadStatus('جاري رفع الصورة إلى الخادم...', 'blue');
+            
+            try {
+                console.log('بدء رفع الصورة...');
+                
+                // 1. رفع الصورة إلى Supabase Storage
+                const fileName = `${Date.now()}_${selectedImageFile.name}`;
+                console.log('اسم الملف:', fileName);
+                
+                const { data: uploadData, error: uploadError } = await supabase.storage
+                    .from('images')
+                    .upload(fileName, selectedImageFile);
+                
+                if (uploadError) {
+                    console.error('خطأ في رفع الصورة:', uploadError);
+                    throw uploadError;
+                }
+                
+                console.log('تم رفع الصورة بنجاح:', uploadData);
+                updateProgress(50);
+                updateUploadStatus('جاري الحصول على رابط الصورة...', 'blue');
+                
+                // 2. الحصول على رابط الصورة
+                const { data: urlData } = supabase.storage
+                    .from('images')
+                    .getPublicUrl(fileName);
+                
+                const imageUrl = urlData.publicUrl;
+                console.log('رابط الصورة:', imageUrl);
+                
+                updateProgress(75);
+                updateUploadStatus('جاري حفظ البيانات...', 'blue');
+                
+                // 3. حفظ البيانات في قاعدة البيانات
+                const { data: dbData, error: dbError } = await supabase
+                    .from('images')
+                    .insert([
+                        {
+                            title: imageTitle.value.trim(),
+                            text: imageText.value.trim(),
+                            publisher: currentAdmin.display_name,
+                            image_url: imageUrl,
+                            created_at: new Date().toISOString()
+                        }
+                    ]);
+                
+                if (dbError) {
+                    console.error('خطأ في حفظ البيانات:', dbError);
+                    throw dbError;
+                }
+                
+                console.log('تم حفظ البيانات بنجاح:', dbData);
+                updateProgress(100);
+                updateUploadStatus('✓ تم النشر بنجاح!', 'green');
+                showToast('تم نشر الصورة بنجاح');
+                
+                // إعادة تعيين النموذج بعد نجاح الرفع
+                setTimeout(() => {
+                    resetUploadForm();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('حدث خطأ أثناء الرفع:', error);
+                updateUploadStatus('✗ فشل في الرفع: ' + error.message, 'red');
+                showToast('حدث خطأ أثناء الرفع: ' + error.message);
+                resetUploadForm();
+            }
+        }
+
+        // إعادة تعيين نموذج الرفع
+        function resetUploadForm() {
+            isUploading = false;
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> نشر الصورة';
+            
+            uploadForm.reset();
+            previewImage.style.display = 'none';
+            selectedImageFile = null;
+            progressBar.style.display = 'none';
+            updateProgress(0);
+            
+            setTimeout(() => {
+                uploadStatus.style.display = 'none';
+            }, 3000);
+        }
+
+        // تبديل الوضع الليلي/النهاري
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const icon = themeToggle.querySelector('i');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // تحميل السمة المحفوظة
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.querySelector('i').classList.remove('fa-moon');
+                themeToggle.querySelector('i').classList.add('fa-sun');
+            }
+        }
+
+        // تهيئة الأحداث
+        function initEvents() {
+            themeToggle.addEventListener('click', toggleTheme);
+            
+            loginForm.addEventListener('submit', checkLogin);
+            
+            uploadArea.addEventListener('click', () => {
+                imageUpload.click();
+            });
+            
+            imageUpload.addEventListener('change', handleImageUpload);
+            uploadForm.addEventListener('submit', uploadImage);
+            
+            logoutBtn.addEventListener('click', logout);
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--primary-color)';
+                uploadArea.style.background = 'rgba(74, 108, 247, 0.05)';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = 'var(--border-color)';
+                uploadArea.style.background = 'var(--card-bg)';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--border-color)';
+                uploadArea.style.background = 'var(--card-bg)';
+                if (e.dataTransfer.files.length) {
+                    imageUpload.files = e.dataTransfer.files;
+                    handleImageUpload({ target: imageUpload });
+                }
+            });
+        }
+
+        // تهيئة التطبيق
+        async function init() {
+            // تهيئة العناصر بعد تحميل DOM
+            themeToggle = document.getElementById('themeToggle');
+            loginPage = document.getElementById('loginPage');
+            adminPage = document.getElementById('adminPage');
+            loginForm = document.getElementById('loginForm');
+            uploadForm = document.getElementById('uploadForm');
+            uploadArea = document.getElementById('uploadArea');
+            imageUpload = document.getElementById('imageUpload');
+            previewImage = document.getElementById('previewImage');
+            uploadStatus = document.getElementById('uploadStatus');
+            progressBar = document.getElementById('progressBar');
+            progress = document.getElementById('progress');
+            imageTitle = document.getElementById('imageTitle');
+            imageText = document.getElementById('imageText');
+            submitBtn = document.getElementById('submitBtn');
+            toast = document.getElementById('toast');
+            toastMessage = document.getElementById('toastMessage');
+            adminAvatar = document.getElementById('adminAvatar');
+            adminName = document.getElementById('adminName');
+            logoutBtn = document.getElementById('logoutBtn');
+            
+            // فحص الاتصال أولاً
+            const isConnected = await checkSupabaseConnection();
+            if (!isConnected) {
+                showToast('لا يوجد اتصال بقاعدة البيانات');
+                return;
+            }
+            
+            // تهيئة المسؤولين
+            await initializeAdmins();
+            
+            // تحميل السمة والتحقق من الجلسة
+            loadTheme();
+            checkExistingSession();
+            initEvents();
+        }
+
+        // تشغيل التطبيق عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
