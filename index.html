@@ -410,6 +410,83 @@
             color: white;
         }
 
+        /* تنسيقات قسم المنشورات */
+        .posts-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .posts-section h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .post-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .post-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .post-publisher {
+            color: var(--accent-color);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .post-text {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .post-date {
+            color: #666;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-posts {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
         @media (max-width: 768px) {
             .header-content {
                 padding: 0 1rem;
@@ -435,6 +512,10 @@
             .admin-login {
                 margin: 2rem auto;
                 padding: 2rem;
+            }
+
+            .posts-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -536,19 +617,32 @@
             
             <form id="uploadForm">
                 <div class="form-group">
-                    <label for="publisherName"><i class="fas fa-user-edit"></i> اسم الناشر:</label>
-                    <input type="text" id="publisherName" required placeholder="أدخل اسم الناشر الذي سيظهر في الموقع">
+                    <label for="imageTitle"><i class="fas fa-heading"></i> عنوان النص المرفق:</label>
+                    <input type="text" id="imageTitle" required placeholder="أدخل عنوان النص المرفق">
                 </div>
-                
+
                 <div class="form-group">
-                    <label for="imageText"><i class="fas fa-align-left"></i> النص المرافق (أول سطر سيكون العنوان):</label>
-                    <textarea id="imageText" required placeholder="أدخل النص المرافق للصورة - أول سطر سيكون العنوان"></textarea>
+                    <label for="imageText"><i class="fas fa-align-left"></i> النص المرافق:</label>
+                    <textarea id="imageText" required placeholder="أدخل النص المرافق للصورة"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="publisherName"><i class="fas fa-user-edit"></i> اسم الناشر:</label>
+                    <input type="text" id="publisherName" required placeholder="أدخل اسم الناشر">
                 </div>
                 
                 <button type="submit" class="submit-btn" id="submitBtn">
                     <i class="fas fa-paper-plane"></i> نشر الصورة
                 </button>
             </form>
+
+            <!-- قسم المنشورات -->
+            <div class="posts-section">
+                <h2><i class="fas fa-list"></i> المنشورات الحالية</h2>
+                <div id="postsContainer" class="posts-grid">
+                    <!-- سيتم تحميل المنشورات هنا -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -570,8 +664,8 @@
         // DOM elements
         let themeToggle, loginPage, adminPage, loginForm, uploadForm, uploadArea;
         let imageUpload, previewImage, uploadStatus, progressBar, progress;
-        let publisherName, imageText, submitBtn, toast, toastMessage;
-        let adminAvatar, adminName, logoutBtn;
+        let imageTitle, publisherName, imageText, submitBtn, toast, toastMessage;
+        let adminAvatar, adminName, logoutBtn, postsContainer;
 
         // المتغيرات العامة
         let selectedImageFile = null;
@@ -590,21 +684,6 @@
                 console.error('❌ خطأ في اتصال Supabase:', error);
                 return false;
             }
-        }
-
-        // دالة لاستخراج العنوان من أول سطر
-        function extractTitleFromText(text) {
-            const lines = text.split('\n');
-            return lines[0].trim(); // أول سطر بيكون العنوان
-        }
-
-        // دالة لاستخراج النص بدون العنوان
-        function extractTextWithoutTitle(text) {
-            const lines = text.split('\n');
-            if (lines.length > 1) {
-                return lines.slice(1).join('\n').trim(); // باقي السطور بتكون النص
-            }
-            return ''; // إذا كان فيه سطر واحد فقط
         }
 
         // التحقق من تسجيل الدخول
@@ -646,6 +725,9 @@
                     loginPage.style.display = 'none';
                     adminPage.style.display = 'block';
                     showToast(`مرحباً ${admin.display_name}`);
+                    
+                    // تحميل المنشورات بعد تسجيل الدخول
+                    loadPosts();
                 } else {
                     showToast('اسم المستخدم أو كلمة المرور غير صحيحة');
                 }
@@ -661,6 +743,53 @@
                 adminName.textContent = currentAdmin.display_name;
                 adminAvatar.textContent = currentAdmin.display_name.charAt(0).toUpperCase();
             }
+        }
+
+        // تحميل المنشورات
+        async function loadPosts() {
+            try {
+                console.log('جاري تحميل المنشورات...');
+                
+                const { data: posts, error } = await supabase
+                    .from('images')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('خطأ في تحميل المنشورات:', error);
+                    throw error;
+                }
+                
+                console.log('تم تحميل المنشورات:', posts);
+                displayPosts(posts);
+                
+            } catch (error) {
+                console.error('حدث خطأ أثناء تحميل المنشورات:', error);
+                showToast('حدث خطأ أثناء تحميل المنشورات');
+            }
+        }
+
+        // عرض المنشورات
+        function displayPosts(posts) {
+            if (!posts || posts.length === 0) {
+                postsContainer.innerHTML = `
+                    <div class="no-posts">
+                        <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>لا توجد منشورات حتى الآن</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            postsContainer.innerHTML = posts.map(post => `
+                <div class="post-card" data-post-id="${post.id}">
+                    <img src="${post.image_url}" alt="${post.title}" class="post-image" onerror="this.src='https://via.placeholder.com/300x200?text=صورة+غير+متوفرة'">
+                    <div class="post-title">${post.title || 'بدون عنوان'}</div>
+                    <div class="post-publisher"><i class="fas fa-user"></i> ${post.publisher || 'غير معروف'}</div>
+                    <div class="post-text">${post.text || 'لا يوجد نص'}</div>
+                    <div class="post-date"><i class="fas fa-calendar"></i> ${new Date(post.created_at).toLocaleDateString('ar-EG')}</div>
+                </div>
+            `).join('');
         }
 
         // تسجيل الخروج
@@ -688,6 +817,8 @@
                         loginPage.style.display = 'none';
                         adminPage.style.display = 'block';
                         console.log('تم استعادة الجلسة السابقة:', currentAdmin);
+                        // تحميل المنشورات
+                        loadPosts();
                     } else {
                         // الجلسة منتهية الصلاحية
                         localStorage.removeItem('adminSession');
@@ -771,17 +902,8 @@
                 return;
             }
             
-            if (!publisherName.value.trim() || !imageText.value.trim()) {
+            if (!imageTitle.value.trim() || !publisherName.value.trim() || !imageText.value.trim()) {
                 showToast('يرجى ملء جميع الحقول المطلوبة');
-                return;
-            }
-            
-            // استخراج العنوان من أول سطر
-            const title = extractTitleFromText(imageText.value);
-            const textWithoutTitle = extractTextWithoutTitle(imageText.value);
-            
-            if (!title) {
-                showToast('يرجى كتابة العنوان في أول سطر');
                 return;
             }
             
@@ -832,9 +954,9 @@
                     .from('images')
                     .insert([
                         {
-                            title: title,
-                            text: textWithoutTitle,
-                            publisher: publisherName.value.trim(), // اسم الناشر من الحقل الجديد
+                            title: imageTitle.value.trim(),
+                            text: imageText.value.trim(),
+                            publisher: publisherName.value.trim(),
                             image_url: imageUrl,
                             created_at: new Date().toISOString()
                         }
@@ -853,6 +975,8 @@
                 // إعادة تعيين النموذج بعد نجاح الرفع
                 setTimeout(() => {
                     resetUploadForm();
+                    // إعادة تحميل المنشورات
+                    loadPosts();
                 }, 1500);
                 
             } catch (error) {
@@ -958,6 +1082,7 @@
             uploadStatus = document.getElementById('uploadStatus');
             progressBar = document.getElementById('progressBar');
             progress = document.getElementById('progress');
+            imageTitle = document.getElementById('imageTitle');
             publisherName = document.getElementById('publisherName');
             imageText = document.getElementById('imageText');
             submitBtn = document.getElementById('submitBtn');
@@ -966,6 +1091,7 @@
             adminAvatar = document.getElementById('adminAvatar');
             adminName = document.getElementById('adminName');
             logoutBtn = document.getElementById('logoutBtn');
+            postsContainer = document.getElementById('postsContainer');
             
             // فحص الاتصال أولاً
             const isConnected = await checkSupabaseConnection();
