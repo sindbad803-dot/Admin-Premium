@@ -6,6 +6,7 @@
     <title>لوحة إدارة Premium AI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* نفس الستايل السابق */
         :root {
             --primary-color: #4a6cf7;
             --secondary-color: #6a75ff;
@@ -592,90 +593,6 @@
             }
         }
 
-        // تهيئة المسؤولين في قاعدة البيانات
-        async function initializeAdmins() {
-            try {
-                console.log('جاري التحقق من وجود المسؤولين...');
-                
-                // التحقق من وجود المسؤولين
-                const { data: existingAdmins, error: checkError } = await supabase
-                    .from('admins')
-                    .select('*');
-                
-                if (checkError) {
-                    console.error('خطأ في التحقق من المسؤولين:', checkError);
-                    // نفترض أن الجدول غير موجود، سنحاول إنشاء المسؤولين
-                }
-                
-                // إذا لم يكن هناك مسؤولين، نقوم بإنشاء المسؤولين الافتراضيين
-                if (!existingAdmins || existingAdmins.length === 0) {
-                    console.log('إنشاء المسؤولين الافتراضيين...');
-                    
-                    const admins = [
-                        {
-                            username: 'karim pro',
-                            password: 'karim@123',
-                            display_name: 'Karim Pro'
-                        },
-                        {
-                            username: 'Abdullah Neda',
-                            password: 'Drox23',
-                            display_name: 'Abdullah Neda'
-                        },
-                        {
-                            username: 'Mido Adel📸✨',
-                            password: 'Mido Adel@124',
-                            display_name: 'Mido Adel'
-                        },
-                        {
-                            username: 'Mido Adel',
-                            password: 'Mido Adel@124',
-                            display_name: 'Mido Adel'
-                        },
-                        {
-                            username: 'ملك الصور بال Ai',
-                            password: 'Ai@1234',
-                            display_name: 'ملك الصور بال Ai'
-                        }
-                    ];
-                    
-                    const { data: newAdmins, error: insertError } = await supabase
-                        .from('admins')
-                        .insert(admins);
-                    
-                    if (insertError) {
-                        console.error('خطأ في إنشاء المسؤولين:', insertError);
-                        // إذا فشل الإدراج، قد يكون الجدول غير موجود
-                        // سنحاول إنشاء الجدول يدويًا
-                        await createAdminsTable();
-                    } else {
-                        console.log('تم إنشاء المسؤولين بنجاح:', newAdmins);
-                    }
-                } else {
-                    console.log('المسؤولون موجودون بالفعل:', existingAdmins);
-                }
-            } catch (error) {
-                console.error('خطأ في تهيئة المسؤولين:', error);
-            }
-        }
-
-        // دالة لإنشاء جدول المسؤولين (إذا لم يكن موجودًا)
-        async function createAdminsTable() {
-            // في Supabase، نقوم بإنشاء الجدول يدويًا من خلال SQL Editor في Dashboard
-            // هذه الدالة توضح فقط أننا نحتاج إلى إنشاء الجدول
-            console.log('يرجى إنشاء جدول admins في Supabase يدويًا');
-            console.log('يمكنك استخدام هذا الاستعلام:');
-            console.log(`
-                CREATE TABLE IF NOT EXISTS admins (
-                    id SERIAL PRIMARY KEY,
-                    username VARCHAR(255) UNIQUE NOT NULL,
-                    password VARCHAR(255) NOT NULL,
-                    display_name VARCHAR(255) NOT NULL,
-                    created_at TIMESTAMP DEFAULT NOW()
-                );
-            `);
-        }
-
         // التحقق من تسجيل الدخول
         async function checkLogin(event) {
             event.preventDefault();
@@ -1033,9 +950,6 @@
                 showToast('لا يوجد اتصال بقاعدة البيانات');
                 return;
             }
-            
-            // تهيئة المسؤولين
-            await initializeAdmins();
             
             // تحميل السمة والتحقق من الجلسة
             loadTheme();
