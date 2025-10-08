@@ -6,7 +6,6 @@
     <title>لوحة إدارة Premium AI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* نفس الستايل السابق */
         :root {
             --primary-color: #4a6cf7;
             --secondary-color: #6a75ff;
@@ -537,13 +536,13 @@
             
             <form id="uploadForm">
                 <div class="form-group">
-                    <label for="imageTitle"><i class="fas fa-heading"></i> عنوان الصورة:</label>
-                    <input type="text" id="imageTitle" required placeholder="أدخل عنوان جذاب للصورة">
+                    <label for="publisherName"><i class="fas fa-user-edit"></i> اسم الناشر:</label>
+                    <input type="text" id="publisherName" required placeholder="أدخل اسم الناشر الذي سيظهر في الموقع">
                 </div>
                 
                 <div class="form-group">
-                    <label for="imageText"><i class="fas fa-align-left"></i> النص المرافق:</label>
-                    <textarea id="imageText" required placeholder="أدخل النص المرافق للصورة"></textarea>
+                    <label for="imageText"><i class="fas fa-align-left"></i> النص المرافق (أول سطر سيكون العنوان):</label>
+                    <textarea id="imageText" required placeholder="أدخل النص المرافق للصورة - أول سطر سيكون العنوان"></textarea>
                 </div>
                 
                 <button type="submit" class="submit-btn" id="submitBtn">
@@ -571,7 +570,7 @@
         // DOM elements
         let themeToggle, loginPage, adminPage, loginForm, uploadForm, uploadArea;
         let imageUpload, previewImage, uploadStatus, progressBar, progress;
-        let imageTitle, imageText, submitBtn, toast, toastMessage;
+        let publisherName, imageText, submitBtn, toast, toastMessage;
         let adminAvatar, adminName, logoutBtn;
 
         // المتغيرات العامة
@@ -591,6 +590,21 @@
                 console.error('❌ خطأ في اتصال Supabase:', error);
                 return false;
             }
+        }
+
+        // دالة لاستخراج العنوان من أول سطر
+        function extractTitleFromText(text) {
+            const lines = text.split('\n');
+            return lines[0].trim(); // أول سطر بيكون العنوان
+        }
+
+        // دالة لاستخراج النص بدون العنوان
+        function extractTextWithoutTitle(text) {
+            const lines = text.split('\n');
+            if (lines.length > 1) {
+                return lines.slice(1).join('\n').trim(); // باقي السطور بتكون النص
+            }
+            return ''; // إذا كان فيه سطر واحد فقط
         }
 
         // التحقق من تسجيل الدخول
@@ -757,8 +771,17 @@
                 return;
             }
             
-            if (!imageTitle.value.trim() || !imageText.value.trim()) {
+            if (!publisherName.value.trim() || !imageText.value.trim()) {
                 showToast('يرجى ملء جميع الحقول المطلوبة');
+                return;
+            }
+            
+            // استخراج العنوان من أول سطر
+            const title = extractTitleFromText(imageText.value);
+            const textWithoutTitle = extractTextWithoutTitle(imageText.value);
+            
+            if (!title) {
+                showToast('يرجى كتابة العنوان في أول سطر');
                 return;
             }
             
@@ -809,9 +832,9 @@
                     .from('images')
                     .insert([
                         {
-                            title: imageTitle.value.trim(),
-                            text: imageText.value.trim(),
-                            publisher: currentAdmin.display_name,
+                            title: title,
+                            text: textWithoutTitle,
+                            publisher: publisherName.value.trim(), // اسم الناشر من الحقل الجديد
                             image_url: imageUrl,
                             created_at: new Date().toISOString()
                         }
@@ -935,7 +958,7 @@
             uploadStatus = document.getElementById('uploadStatus');
             progressBar = document.getElementById('progressBar');
             progress = document.getElementById('progress');
-            imageTitle = document.getElementById('imageTitle');
+            publisherName = document.getElementById('publisherName');
             imageText = document.getElementById('imageText');
             submitBtn = document.getElementById('submitBtn');
             toast = document.getElementById('toast');
